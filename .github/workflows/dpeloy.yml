@@ -1,0 +1,61 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to (staging or production)'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+      deploy_tag:
+        description: 'Deploy specific tag (leave blank for latest)'
+        required: false
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }} # Set the environment
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.deploy_tag }}  # Check out the specified tag, if provided
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+
+      - name: Install dependencies
+        run: go mod tidy
+
+      - name: Build
+        run: make build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to ${{ inputs.environment }}
+        run: |
+          if [[ "${{ inputs.environment }}" == "staging" ]]; then
+            # Deploy to staging environment (e.g., using AWS Elastic Beanstalk, ECS, or EKS)
+            echo "Deploying to staging..."
+            # ... your staging deployment commands ...
+          elif [[ "${{ inputs.environment }}" == "production" ]]; then
+            # Deploy to production environment
+            echo "Deploying to production..."
+            # ... your production deployment commands ...
+          else
+            echo "Invalid environment specified."
+            exit 1
+          fi

@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# Check if the pre-commit hook is being bypassed
+if [ "$BYPASS_PRE_COMMIT" = "1" ]; then
+    echo "Pre-commit hook bypassed."
+    exit 0
+fi
+
+# --- Run Linter ---
+echo "Running linter..."
+golangci-lint run
+
+# Check the linter's exit code
+LINTER_EXIT_CODE=$?
+
+# If the linter failed, exit with the same code to stop the commit
+if [ $LINTER_EXIT_CODE -ne 0 ]; then
+  echo "Linter failed. Please fix the errors before committing."
+  exit $LINTER_EXIT_CODE
+fi
+
+# --- Run Tests ---
+echo "Running tests..."
+make test
+
+# Check the tests' exit code
+TEST_EXIT_CODE=$?
+
+# If tests failed, exit with the same code to stop the commit
+if [ $TEST_EXIT_CODE -ne 0 ]; then
+  echo "Tests failed. Please fix the tests before committing."
+  exit $TEST_EXIT_CODE
+fi
+
+echo "Pre-commit checks passed."
+exit 0

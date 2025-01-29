@@ -1,0 +1,6 @@
+server:
+  port: 8000
+  writeTimeout: 15
+  readTimeout: 15
+database:
+  host: localhost

@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Check if the commit-msg hook is being bypassed
+if [ "$BYPASS_COMMIT_MSG" = "1" ]; then
+    echo "Commit-msg hook bypassed."
+    exit 0
+fi
+
+# Get the commit message from the file passed as an argument
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Regular expression to enforce a simple commit message format:
+#   <type>(<scope>): <subject>
+# Example: feat(api): Add new endpoint for fetching memes
+COMMIT_MSG_REGEX="^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?:\s.{1,72}$"
+
+if ! echo "$COMMIT_MSG" | grep -E "$COMMIT_MSG_REGEX"; then
+  echo "Invalid commit message format."
+  echo "Please use the format: <type>(<scope>): <subject>"
+  echo "  <type> can be: feat, fix, docs, style, refactor, test, chore"
+  echo "  <scope> (optional) specifies the part of the project affected (e.g., api, service, docs)"
+  echo "  <subject> is a brief description of the changes (max 72 characters)"
+  exit 1
+fi
+
+echo "Commit message is valid."
+exit 0

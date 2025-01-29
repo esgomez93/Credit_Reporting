@@ -1,0 +1,15 @@
+packages:
+  maas/pkg/repository:
+    interfaces:
+      MemeRepository:
+        config:
+          inpackage: true  # Generate mocks in the same package as the interface
+          testonly: true   # Generate mocks with a "_test.go" suffix
+          keeptree: true # Replicate the source directory structure
+  maas/pkg/service:
+    interfaces:
+      MemeService:
+        config:
+          inpackage: true  
+          testonly: true
+          keeptree: true
