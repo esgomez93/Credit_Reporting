@@ -1,4 +1,3 @@
-```markdown
 # Meme as a Service (MaaS)
 
 ## Overview
@@ -46,7 +45,6 @@ maas/
 └── config.yaml          \# Configuration file
 └── README.md
 
-````
 
 -   **`cmd/`:** Contains the main application entry point.
 -   **`pkg/`:**  The core logic of the application, divided into:
